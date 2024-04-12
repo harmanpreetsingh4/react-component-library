@@ -1,0 +1,30 @@
+name: Prettier Check
+
+on:
+  pull_request:
+  push:
+    branches:
+      - diamond
+
+jobs:
+  prettier:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Prettify code
+        uses: creyD/prettier_action@v4.3
+        with:
+          prettier_options: --write **/*.{js,md}
+
+      - name: Check for Changes
+        run: git diff --exit-code
+        continue-on-error: true
+
+      - name: Notify on Failure
+        if: ${{ failure() }}
+        run: echo "::error::Prettier check failed. Please run prettier locally and commit the changes."
